@@ -63,16 +63,34 @@
         </el-card>
       </el-col>
     </el-row>
+
+    <el-table
+        :data="keyList"
+        row-key="id"
+    >
+      <el-table-column prop="keyTemplate" label="Key 模板" width="200" />
+      <el-table-column prop="keyType" label="Key 类型" width="100" />
+      <el-table-column prop="valueType" label="Value 类型" />
+      <el-table-column prop="timeoutType" label="超时时间" width="200">
+        <template slot-scope="scope">
+          <dict-tag :type="DICT_TYPE.INFRA_REDIS_TIMEOUT_TYPE" :value="scope.row.timeoutType" />
+          <span v-if="scope.row.timeout > 0">({{ scope.row.timeout / 1000 }} 秒)</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="memo" label="备注" />
+    </el-table>
   </div>
+
 </template>
 
 <script setup>
-import { getCache } from '@/api/monitor/cache';
+import { getCache,getKeyList } from '@/api/monitor/cache';
 import * as echarts from 'echarts';
 
 const cache = ref([]);
 const commandstats = ref(null);
 const usedmemory = ref(null);
+let keyList = ref(null);
 const { proxy } = getCurrentInstance();
 
 function getList() {
@@ -125,7 +143,10 @@ function getList() {
       ],
     })
   })
+  getKeyList().then(response => {
+    proxy.$modal.closeLoading();
+    keyList = response.data;
+  })
 }
-
 getList();
 </script>

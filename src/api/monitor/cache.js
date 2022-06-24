@@ -7,3 +7,10 @@ export function getCache() {
     method: 'get'
   })
 }
+
+export function getKeyList() {
+  return request({
+    url: '/monitor/redis/get-key-list',
+    method: 'get'
+  })
+}
